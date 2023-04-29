@@ -96,8 +96,7 @@ class BaseDataModule(pl.LightningDataModule):
 
         from transformers import AutoProcessor
         self.vis_processor = AutoProcessor.from_pretrained(args.model_card)
-        self.enc_tok = AutoTokenizer.from_pretrained(args.enc_tok)
-        self.dec_tok = AutoTokenizer.from_pretrained(args.dec_tok)
+        self.dec_tok = AutoTokenizer.from_pretrained(args.lm_card)
     
     
     def setup(self, stage):

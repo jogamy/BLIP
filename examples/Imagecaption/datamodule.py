@@ -41,19 +41,19 @@ class ImageCaptionCollator(BaseCollator):
             assert len(feature['decoder_input_ids']) == self.max_len, f"{len(feature['decoder_input_ids'])}"
             feature['caption'] = self.labeling(feature['caption'])
             
-        # batch = {
-        #     "pixel_values": torch.FloatTensor(np.stack([feature['pixel_values'] for feature in features])),
-        #     "labels": torch.LongTensor(np.stack([feature['caption'] for feature in features])),
-        #     "decoder_input_ids": torch.LongTensor(np.stack([feature['decoder_input_ids'] for feature in features])),
-        #     "decoder_attention_mask": torch.LongTensor(np.stack([feature['decoder_attention_mask'] for feature in features])),                    
-        # }
-
         batch = {
-            "pixel_values": torch.HalfTensor(np.stack([feature['pixel_values'] for feature in features])),
+            "pixel_values": torch.FloatTensor(np.stack([feature['pixel_values'] for feature in features])),
             "labels": torch.LongTensor(np.stack([feature['caption'] for feature in features])),
             "decoder_input_ids": torch.LongTensor(np.stack([feature['decoder_input_ids'] for feature in features])),
             "decoder_attention_mask": torch.LongTensor(np.stack([feature['decoder_attention_mask'] for feature in features])),                    
         }
+
+        # batch = {
+        #     "pixel_values": torch.HalfTensor(np.stack([feature['pixel_values'] for feature in features])),
+        #     "labels": torch.LongTensor(np.stack([feature['caption'] for feature in features])),
+        #     "decoder_input_ids": torch.LongTensor(np.stack([feature['decoder_input_ids'] for feature in features])),
+        #     "decoder_attention_mask": torch.LongTensor(np.stack([feature['decoder_attention_mask'] for feature in features])),                    
+        # }
    
         return batch
     

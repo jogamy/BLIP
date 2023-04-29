@@ -60,6 +60,8 @@ class ArgBase():
 
         parser.add_argument("--model_card", type=str, default=None, help="Model card")
 
+        parser.add_argument("--lm_card", type=str, default=None, help="Model card")
+
         
         
         return parser   
@@ -69,7 +71,6 @@ class TokenizerArgs():
     def add_model_specific_args(parent_parser):
         parser = argparse.ArgumentParser(
             parents=[parent_parser], add_help=False)
-        
         parser.add_argument('--enc_tok', type=str, default="custom")
         parser.add_argument('--dec_tok', type=str, default="custom")
         
@@ -221,7 +222,7 @@ if __name__=="__main__":
     # parser = EncoderArgs.add_model_specific_args(parser)
     # parser = DecoderArgs.add_model_specific_args(parser)
     # parser = InformationPredictorArgs.add_model_specific_args(parser)
-    parser = TokenizerArgs.add_model_specific_args(parser)
+    # parser = TokenizerArgs.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
     args = parser.parse_args()
     logging.info(args)
@@ -230,11 +231,8 @@ if __name__=="__main__":
 
     dm = DataModule(args)
     
-    enc_tok = dm.enc_tok
     dec_tok = dm.dec_tok
 
-    
-    
     m = Module(args)
     
     dir_path = os.path.join(DIR, "model")
@@ -249,7 +247,7 @@ if __name__=="__main__":
     tb_logger = pl_loggers.TensorBoardLogger(os.path.join(dir_path, 'tb_logs'))
     lr_logger = pl.callbacks.LearningRateMonitor()
 
-    trainer = pl.Trainer.from_argparse_args(args, accelerator='gpu', devices=args.devices, strategy="ddp", gradient_clip_val=1.0,
+    trainer = pl.Trainer.from_argparse_args(args, accelerator='gpu', devices=args.devices, strategy="ddp", #precision=16, gradient_clip_val=1.0,
                                         logger=tb_logger, callbacks=[checkpoint_callback, lr_logger])
     
     trainer.fit(model=m, datamodule=dm)

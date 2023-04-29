@@ -4,8 +4,7 @@ import torch
 from torch import nn
 from torch.nn import CrossEntropyLoss
 
-from transformers import AutoModel
-from transformers import Blip2Processor, Blip2ForConditionalGeneration, AutoConfig
+from transformers import AutoModelForSeq2SeqLM, Blip2ForConditionalGeneration, AutoConfig
 
 
 # class LMWrapper(nn.Module):
@@ -19,8 +18,9 @@ class BLIPWrapper(nn.Module):
         # config = AutoConfig.from_pretrained(args.model_card)    
 
         self.config = AutoConfig.from_pretrained(args.model_card)
-        model = Blip2ForConditionalGeneration.from_pretrained(args.model_card, torch_dtype=torch.float16) 
-        model.half()
+        model = Blip2ForConditionalGeneration.from_pretrained(args.model_card)
+        # model = Blip2ForConditionalGeneration.from_pretrained(args.model_card, torch_dtype=torch.float16) 
+        # model.half()
         
         model.config.max_length = 50
 
@@ -29,30 +29,15 @@ class BLIPWrapper(nn.Module):
         
         self.qformer = model.qformer
 
-        # self.vision_model.eval()
-        # self.vision_model.requires_grad_(False)
-        # for param in self.vision_model.parameters():
-        #     param.requires_grad = False
-
-        # self.qformer.eval()
-        # self.qformer.requires_grad_(False)
-        # for param in self.qformer.parameters():
-        #     param.requires_grad = False
-
-        # self.query_tokens.requires_grad = False
-        # for param in self.query_tokens.parameters():
-        #     param.requires_grad = False
-        # for param in self.vision_model.parameters():
-        #     param.requires_grad = False
-        # for param in self.qformer.parameters():
-        #     param.requires_grad = False
-
-        self.language_projection = model.language_projection        
-        self.language_model = model.language_model
+        # LM이 없다
         
+        lm_card = 'google/flan-t5-base'
 
-        for param in self.language_projection.parameters():
-            param.requires_grad = False
+        lm_config = AutoConfig.from_pretrained(lm_card)
+        self.language_projection = nn.Linear(self.config.qformer_config.hidden_size, lm_config.d_model)
+        language_model = AutoModelForSeq2SeqLM.from_config(lm_config)
+        self.language_model = language_model
+            
         for param in self.language_model.parameters():
             param.requires_grad = False
 
