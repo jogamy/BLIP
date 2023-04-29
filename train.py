@@ -249,7 +249,7 @@ if __name__=="__main__":
     tb_logger = pl_loggers.TensorBoardLogger(os.path.join(dir_path, 'tb_logs'))
     lr_logger = pl.callbacks.LearningRateMonitor()
 
-    trainer = pl.Trainer.from_argparse_args(args, accelerator='gpu', devices=args.devices, strategy="ddp", precision=16,
+    trainer = pl.Trainer.from_argparse_args(args, accelerator='gpu', devices=args.devices, strategy="ddp",
                                         logger=tb_logger, callbacks=[checkpoint_callback, lr_logger])
     
     trainer.fit(model=m, datamodule=dm)

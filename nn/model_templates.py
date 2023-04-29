@@ -19,7 +19,8 @@ class BLIPWrapper(nn.Module):
         # config = AutoConfig.from_pretrained(args.model_card)    
 
         self.config = AutoConfig.from_pretrained(args.model_card)
-        model = Blip2ForConditionalGeneration.from_pretrained(args.model_card) 
+        model = Blip2ForConditionalGeneration.from_pretrained(args.model_card, torch_dtype=torch.float16) 
+        model.half()
         
         model.config.max_length = 50
 
